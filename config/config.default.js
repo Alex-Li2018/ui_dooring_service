@@ -31,6 +31,22 @@ module.exports = appInfo => {
     // 允许访问接口的白名单
     domainWhiteList: [ 'http://localhost:8080', 'http://47.108.182.74' ],
   };
+  // 跨域配置
+  config.cors = {
+    origin: '*',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+  };
+
+  config.middleware = [ 'jwtMiddleWare' ];
+  config.jwtMiddleWare = {
+    exclude: [
+      '/v1/login',
+      '/v1/register',
+    ],
+  };
+  config.jwt = {
+    secret: 'aVwCkQeOrT',
+  };
 
   // sequelize数据库
   config.sequelize = {

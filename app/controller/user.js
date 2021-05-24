@@ -8,6 +8,10 @@ function toInt(str) {
 }
 
 class UserController extends Controller {
+  // 登录
+  async login() {
+    
+  }
   // 查询
   async index() {
     const ctx = this.ctx;
@@ -34,11 +38,22 @@ class UserController extends Controller {
   }
   // 新增
   async create() {
-    const ctx = this.ctx;
+    const { ctx, app } = this;
     const { name, password } = ctx.request.body;
     try {
       const user = await ctx.model.User.create({ name, password });
-      this.success(user, '新增成功');
+      // 验证token，请求时在header配置 Authorization=`Bearer ${token}`
+      const token = app.jwt.sign({
+        user_name: user.name,
+        uid: user.id,
+      }, app.config.jwt.secret, {
+        expiresIn: '1 days',
+      });
+      this.success({
+        name: user.name,
+        id: user.id,
+        token
+      }, '新增成功');
     } catch (err) {
       this.error(err, '新增失败');
     }

@@ -104,9 +104,9 @@ class UserController extends Controller {
     const { name, password } = ctx.request.body;
     try {
       const userData = await user.update({ name, password });
-      this.success(userData, '新增成功');
+      this.success(userData, '更新成功');
     } catch (err) {
-      this.error(err, '新增失败');
+      this.error(err, '更新失败');
     }
   }
   // // 删除

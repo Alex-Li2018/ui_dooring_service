@@ -13,7 +13,10 @@ class PageController extends Controller {
     const ctx = this.ctx;
     const query = { limit: toInt(ctx.query.limit), offset: toInt(ctx.query.offset) };
     try {
-      const res = await ctx.model.User.findAll(query);
+      const res = await ctx.model.Page.findAll(query);
+      res.forEach(item => {
+        item.content = JSON.parse(item.content);
+      });
       this.success(res, '查询成功');
     } catch (err) {
       this.error(err, '查询失败');
@@ -26,7 +29,8 @@ class PageController extends Controller {
       this.error({}, 'id参数有误');
     }
     try {
-      const data = await ctx.model.User.findByPk(toInt(ctx.params.id));
+      const data = await ctx.model.Page.findByPk(toInt(ctx.params.id));
+      data.content = JSON.parse(data.content);
       this.success(data, '查询详情成功');
     } catch (err) {
       this.error(err, '查询详情失败');
@@ -34,22 +38,19 @@ class PageController extends Controller {
   }
   // 新增
   async create() {
-    const { ctx, app } = this;
-    const { name, password } = ctx.request.body;
+    const { ctx } = this;
+    const { name, content } = ctx.request.body;
+    // 参数验证
+    ctx.validate({
+      name: { type: 'string', required: true, desc: '页面名称' },
+    });
+    if (ctx.paramErrors) {
+      return this.error(ctx.paramErrors, '参数校验不通过');
+    }
     try {
-      const user = await ctx.model.User.create({ name, password });
-      // 验证token，请求时在header配置 Authorization=`Bearer ${token}`
-      const token = app.jwt.sign({
-        user_name: user.name,
-        uid: user.id,
-      }, app.config.jwt.secret, {
-        expiresIn: '1 days',
-      });
-      this.success({
-        name: user.name,
-        id: user.id,
-        token,
-      }, '新增成功');
+      const page = await ctx.model.Page.create({ name, content: JSON.stringify(content || {}) });
+      page.content = JSON.parse(page.content);
+      this.success(page, '新增成功');
     } catch (err) {
       this.error(err, '新增失败');
     }
@@ -58,32 +59,37 @@ class PageController extends Controller {
   async update() {
     const ctx = this.ctx;
     const id = toInt(ctx.params.id);
-    const user = await ctx.model.User.findByPk(id);
-    if (!user) {
+    const page = await ctx.model.Page.findByPk(id);
+    if (!page) {
       this.error({}, '查找id失败');
       return;
     }
 
-    const { name, password } = ctx.request.body;
+    const { name, content } = ctx.request.body;
     try {
-      const userData = await user.update({ name, password });
-      this.success(userData, '新增成功');
+      const data = await page.update({ name, content: JSON.stringify(content || {}) });
+      data.content = JSON.parse(data.content);
+      this.success(data, '更新成功');
     } catch (err) {
-      this.error(err, '新增失败');
+      this.error(err, '更新失败');
     }
   }
   // 删除
   async destroy() {
     const ctx = this.ctx;
     const id = toInt(ctx.params.id);
-    const user = await ctx.model.User.findByPk(id);
-    if (!user) {
+    const page = await ctx.model.Page.findByPk(id);
+    if (!page) {
       ctx.status = 404;
       return;
     }
 
-    await user.destroy();
-    ctx.status = 200;
+    try {
+      await page.destroy();
+      this.success({}, '删除成功');
+    } catch (err) {
+      this.error(err, '删除失败');
+    }
   }
 }
 

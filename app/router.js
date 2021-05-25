@@ -9,5 +9,6 @@ module.exports = app => {
   const apiV1Router = app.router.namespace('/v1');
   // RESTful 的方式来定义路由
   apiV1Router.post('/register', controller.user.create);
+  apiV1Router.post('/login', controller.user.login);
   apiV1Router.resources('users', '/users', controller.user);
 };

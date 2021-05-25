@@ -10,7 +10,40 @@ function toInt(str) {
 class UserController extends Controller {
   // 登录
   async login() {
-    
+    const { ctx, app } = this;
+    const { name, password } = ctx.request.body;
+    // 参数验证
+    ctx.validate({
+      name: { type: 'string', required: true, desc: '昵称' },
+      password: { type: 'string', required: true, desc: '密码' },
+    });
+    if (ctx.paramErrors) {
+      return this.error(ctx.paramErrors, '参数校验不通过');
+    }
+    try {
+      const { dataValues: user } = await ctx.model.User.findOne({ where: { name } });
+
+      if (!user || user.password !== password) {
+        this.error({}, '手机号或密码错误!');
+        return;
+      }
+
+      // 验证token，请求时在header配置 Authorization=`Bearer ${token}`
+      const token = app.jwt.sign({
+        user_name: user.name,
+        uid: user.id,
+      }, app.config.jwt.secret, {
+        expiresIn: '1 days',
+      });
+
+      this.success({
+        name: user.name,
+        id: user.id,
+        token,
+      }, '登录成功');
+    } catch (err) {
+      this.error(err, '登录失败');
+    }
   }
   // 查询
   async index() {
@@ -32,7 +65,7 @@ class UserController extends Controller {
     try {
       const data = await ctx.model.User.findByPk(toInt(ctx.params.id));
       this.success(data, '查询详情成功');
-    } catch {
+    } catch (err) {
       this.error(err, '查询详情失败');
     }
   }
@@ -52,7 +85,7 @@ class UserController extends Controller {
       this.success({
         name: user.name,
         id: user.id,
-        token
+        token,
       }, '新增成功');
     } catch (err) {
       this.error(err, '新增失败');

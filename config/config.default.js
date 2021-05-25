@@ -59,6 +59,17 @@ module.exports = appInfo => {
     timezone: '+08:00', // 东八时区
   };
 
+  config.valparams = {
+    locale: 'zh-cn',
+    throwError: false,
+  };
+  // 参数校验
+  config.validate = {
+    // 对参数可以使用convertType规则进行类型转换
+    convert: false,
+    // validateRoot: false,
+  };
+
   return {
     ...config,
     ...userConfig,

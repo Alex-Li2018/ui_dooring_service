@@ -15,3 +15,9 @@ exports.jwt = {
   enable: true,
   package: 'egg-jwt',
 };
+
+// 参数校验
+exports.validate = {
+  enable: true,
+  package: 'egg-validate',
+};

@@ -40,6 +40,7 @@ module.exports = appInfo => {
   config.middleware = [ 'jwtMiddleWare' ];
   config.jwtMiddleWare = {
     exclude: [
+      '/index',
       '/v1/login',
       '/v1/register',
     ],
@@ -68,6 +69,14 @@ module.exports = appInfo => {
     // 对参数可以使用convertType规则进行类型转换
     convert: false,
     // validateRoot: false,
+  };
+
+  // 配置模板引擎
+  config.view = {
+    mapping: {
+      // 模板文件以html结尾
+      '.html': 'ejs',
+    },
   };
 
   return {

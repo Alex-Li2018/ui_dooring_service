@@ -5,6 +5,7 @@
  */
 module.exports = app => {
   const { controller } = app;
+  app.router.get('/index', controller.home.index);
   // 设置命名空间
   const apiV1Router = app.router.namespace('/v1');
 

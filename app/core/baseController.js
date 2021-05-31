@@ -1,5 +1,10 @@
 'use strict';
 const { Controller } = require('egg');
+const {
+  SUCCESS,
+  ERROR_STATUS,
+  ERROR_NOT_FOUND,
+} = require('./statusCode');
 
 class BaseController extends Controller {
   get user() {
@@ -8,7 +13,7 @@ class BaseController extends Controller {
 
   success(data, msg) {
     this.ctx.body = {
-      code: 200,
+      code: SUCCESS,
       data,
       msg,
     };
@@ -16,7 +21,7 @@ class BaseController extends Controller {
 
   error(data, msg) {
     this.ctx.body = {
-      code: 400,
+      code: ERROR_STATUS,
       data,
       msg,
     };
@@ -24,7 +29,7 @@ class BaseController extends Controller {
 
   notFound(msg) {
     msg = msg || 'not found';
-    this.ctx.throw(404, msg);
+    this.ctx.throw(ERROR_NOT_FOUND, msg);
   }
 }
 

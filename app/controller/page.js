@@ -40,14 +40,15 @@ class PageController extends Controller {
   async create() {
     const { ctx } = this;
     const { name, content } = ctx.request.body;
-    // 参数验证
-    ctx.validate({
-      name: { type: 'string', required: true, desc: '页面名称' },
-    });
-    if (ctx.paramErrors) {
-      return this.error(ctx.paramErrors, '参数校验不通过');
-    }
+
     try {
+      // 参数验证
+      ctx.validate({
+        name: { type: 'string', required: true, desc: '页面名称' },
+      });
+      if (ctx.paramErrors) {
+        return this.error(ctx.paramErrors, '参数校验不通过');
+      }
       const page = await ctx.model.Page.create({ name, content: JSON.stringify(content || {}) });
       page.content = JSON.parse(page.content);
       this.success(page, '新增成功');
@@ -67,6 +68,13 @@ class PageController extends Controller {
 
     const { name, content } = ctx.request.body;
     try {
+      // 参数验证
+      ctx.validate({
+        name: { type: 'string', required: true, desc: '页面名称' },
+      });
+      if (ctx.paramErrors) {
+        return this.error(ctx.paramErrors, '参数校验不通过');
+      }
       const data = await page.update({ name, content: JSON.stringify(content || {}) });
       data.content = JSON.parse(data.content);
       this.success(data, '更新成功');

@@ -1,4 +1,8 @@
 'use strict';
+const {
+  ERROR_TOKEN_EMPTY,
+  ERROR_TOKEN_INVALID,
+} = require('../core/statusCode');
 
 module.exports = options => {
   // 页面token鉴权统一处理
@@ -6,6 +10,14 @@ module.exports = options => {
     // 先判断是否需要鉴权
     const { exclude } = options;
     const requestUrl = ctx.request.url;
+
+    if (!ctx.request.header.authorization) {
+      ctx.body = {
+        code: ERROR_TOKEN_EMPTY,
+        data: {},
+        msg: 'token为空',
+      };
+    }
 
     if (!exclude.includes(requestUrl.replace(/\?.*$/g, ''))) {
       let token = ctx.request.header.authorization;
@@ -19,17 +31,17 @@ module.exports = options => {
           await next();
         } catch (error) {
           ctx.body = {
-            code: 200,
+            code: ERROR_TOKEN_INVALID,
             data: error,
-            msg: '解密token失败',
+            msg: 'token无效',
           };
           return;
         }
       } else {
         ctx.body = {
-          code: 200,
+          code: ERROR_TOKEN_EMPTY,
           data: {},
-          msg: '没有token',
+          msg: 'token为空',
         };
         return;
       }

@@ -27,7 +27,8 @@ module.exports = options => {
           // 解码token
           token = token.replace('Bearer ', '');
           decode = ctx.app.jwt.verify(token, ctx.app.config.jwt.secret);
-          console.log(decode);
+          // 业务都在这里使用
+          ctx.state.user = decode;
           await next();
         } catch (error) {
           ctx.body = {

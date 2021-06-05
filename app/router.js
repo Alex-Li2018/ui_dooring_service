@@ -11,6 +11,7 @@ module.exports = app => {
 
   apiV1Router.post('/register', controller.user.create);
   apiV1Router.post('/login', controller.user.login);
+  apiV1Router.get('/logout', controller.user.logout);
   // RESTful 的方式来定义路由
   apiV1Router.resources('users', '/users', controller.user);
   apiV1Router.resources('pages', '/pages', controller.page);

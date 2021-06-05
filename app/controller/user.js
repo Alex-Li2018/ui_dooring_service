@@ -45,6 +45,25 @@ class UserController extends Controller {
       this.error(err, '登录失败');
     }
   }
+  // 登出
+  async logout() {
+    const { ctx, app } = this;
+    try {
+      // 验证token，请求时在header配置 Authorization=`Bearer ${token}`
+      const token = app.jwt.sign({
+        user_name: ctx.state.user.name,
+        uid: ctx.state.user.id,
+      }, app.config.jwt.secret, {
+        expiresIn: 0,
+      });
+
+      this.success({
+        token,
+      }, '登录成功');
+    } catch (err) {
+      this.error(err, '登录失败');
+    }
+  }
   // 查询
   async index() {
     const ctx = this.ctx;
@@ -109,19 +128,6 @@ class UserController extends Controller {
       this.error(err, '更新失败');
     }
   }
-  // // 删除
-  // async destroy() {
-  //   const ctx = this.ctx;
-  //   const id = toInt(ctx.params.id);
-  //   const user = await ctx.model.User.findByPk(id);
-  //   if (!user) {
-  //     ctx.status = 404;
-  //     return;
-  //   }
-
-  //   await user.destroy();
-  //   ctx.status = 200;
-  // }
 }
 
 module.exports = UserController;

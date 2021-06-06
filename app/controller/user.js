@@ -69,8 +69,16 @@ class UserController extends Controller {
     const ctx = this.ctx;
     const query = { limit: toInt(ctx.query.limit), offset: toInt(ctx.query.offset) };
     try {
-      const res = await ctx.model.User.findAll(query);
-      this.success(res, '查询成功');
+      const res = await ctx.model.User.findAndCountAll(query);
+      res.rows.forEach(item => {
+        item.content = JSON.parse(item.content);
+      });
+      this.success({
+        lists: res.rows,
+        total: res.count,
+        page: ctx.query.page,
+        page_size: ctx.query.page_size,
+      }, '查询成功');
     } catch (err) {
       this.error(err, '查询失败');
     }

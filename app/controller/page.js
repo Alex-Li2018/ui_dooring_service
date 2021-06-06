@@ -20,11 +20,16 @@ class PageController extends Controller {
       },
     };
     try {
-      const res = await ctx.model.Page.findAll(query);
-      res.forEach(item => {
+      const res = await ctx.model.Page.findAndCountAll(query);
+      res.rows.forEach(item => {
         item.content = JSON.parse(item.content);
       });
-      this.success(res, '查询成功');
+      this.success({
+        lists: res.rows,
+        total: res.count,
+        page: ctx.query.page,
+        page_size: ctx.query.page_size,
+      }, '查询成功');
     } catch (err) {
       this.error(err, '查询失败');
     }

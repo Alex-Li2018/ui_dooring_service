@@ -11,6 +11,10 @@ module.exports = app => {
       allowNull: false,
     },
     content: TEXT,
+    user_id: {
+      type: INTEGER,
+      allowNull: false,
+    },
     created_at: {
       type: DATE,
       get() {

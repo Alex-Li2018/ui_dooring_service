@@ -52,7 +52,7 @@ class UserController extends Controller {
       // 验证token，请求时在header配置 Authorization=`Bearer ${token}`
       const token = app.jwt.sign({
         user_name: ctx.state.user.name,
-        uid: ctx.state.user.id,
+        uid: ctx.state.user.uid,
       }, app.config.jwt.secret, {
         expiresIn: 0,
       });

@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const { INTEGER } = Sequelize;
-    await queryInterface.addColumn('pages', 'user_id', { type: INTEGER });
+    await queryInterface.addColumn('pages', 'user_id', { type: INTEGER, allowNull: false });
   },
 
   down: async (queryInterface, Sequelize) => {

@@ -11,7 +11,14 @@ class PageController extends Controller {
   // 查询
   async index() {
     const ctx = this.ctx;
-    const query = { limit: toInt(ctx.query.limit), offset: toInt(ctx.query.offset) };
+    const userId = ctx.state.user.uid;
+    const query = {
+      limit: toInt(ctx.query.page_size),
+      offset: (toInt(ctx.query.page) - 1) * toInt(ctx.query.page_size),
+      where: {
+        user_id: userId,
+      },
+    };
     try {
       const res = await ctx.model.Page.findAll(query);
       res.forEach(item => {
@@ -29,9 +36,14 @@ class PageController extends Controller {
       this.error({}, 'id参数有误');
     }
     try {
+      const userId = ctx.state.user.uid;
       const data = await ctx.model.Page.findByPk(toInt(ctx.params.id));
-      data.content = JSON.parse(data.content);
-      this.success(data, '查询详情成功');
+      if (data.user_id !== userId) {
+        this.error({}, '你不是该页面实例的创建者!');
+      } else {
+        data.content = JSON.parse(data.content);
+        this.success(data, '查询详情成功');
+      }
     } catch (err) {
       this.error(err, '查询详情失败');
     }
@@ -49,7 +61,8 @@ class PageController extends Controller {
       if (ctx.paramErrors) {
         return this.error(ctx.paramErrors, '参数校验不通过');
       }
-      const page = await ctx.model.Page.create({ name, content: JSON.stringify(content || {}) });
+      const userId = ctx.state.user.uid;
+      const page = await ctx.model.Page.create({ name, content: JSON.stringify(content || {}), user_id: userId });
       page.content = JSON.parse(page.content);
       this.success(page, '新增成功');
     } catch (err) {
@@ -75,9 +88,14 @@ class PageController extends Controller {
       if (ctx.paramErrors) {
         return this.error(ctx.paramErrors, '参数校验不通过');
       }
+      const userId = ctx.state.user.uid;
       const data = await page.update({ name, content: JSON.stringify(content || {}) });
-      data.content = JSON.parse(data.content);
-      this.success(data, '更新成功');
+      if (data.user_id !== userId) {
+        this.error({}, '你不是该页面实例的创建者!');
+      } else {
+        data.content = JSON.parse(data.content);
+        this.success(data, '更新成功');
+      }
     } catch (err) {
       this.error(err, '更新失败');
     }
@@ -91,13 +109,18 @@ class PageController extends Controller {
       ctx.status = 404;
       return;
     }
-
-    try {
-      await page.destroy();
-      this.success({}, '删除成功');
-    } catch (err) {
-      this.error(err, '删除失败');
+    const userId = ctx.state.user.uid;
+    if (page.user_id !== userId) {
+      this.error({}, '你不是该页面实例的创建者!');
+    } else {
+      try {
+        await page.destroy();
+        this.success({}, '删除成功');
+      } catch (err) {
+        this.error(err, '删除失败');
+      }
     }
+
   }
 }
 

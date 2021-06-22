@@ -9,6 +9,7 @@ module.exports = app => {
   // 设置命名空间
   const apiV1Router = app.router.namespace('/v1');
 
+  apiV1Router.get('/qiniu-token', controller.qiniuToken.index);
   apiV1Router.post('/register', controller.user.create);
   apiV1Router.post('/login', controller.user.login);
   apiV1Router.get('/logout', controller.user.logout);

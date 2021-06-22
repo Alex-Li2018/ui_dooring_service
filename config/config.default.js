@@ -41,6 +41,7 @@ module.exports = appInfo => {
   config.jwtMiddleWare = {
     exclude: [
       '/index',
+      '/v1/qiniu-token',
       '/v1/login',
       '/v1/register',
     ],

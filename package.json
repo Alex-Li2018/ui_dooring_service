@@ -15,7 +15,8 @@
     "egg-validate": "^2.0.2",
     "egg-view-ejs": "^2.0.1",
     "moment": "^2.29.1",
-    "mysql2": "^2.2.5"
+    "mysql2": "^2.2.5",
+    "qiniu": "^7.3.3"
   },
   "devDependencies": {
     "autod": "^3.0.1",

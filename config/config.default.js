@@ -42,6 +42,7 @@ module.exports = appInfo => {
     exclude: [
       '/index',
       '/v1/qiniu-token',
+      '/v1/fetch-url',
       '/v1/login',
       '/v1/register',
     ],
